@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+
+  fulfilment-processor:
+    image: courselabs/fulfilment-processor:linux-amd64
+
+  fulfilment-web:
+    image: courselabs/fulfilment-web:linux-amd64
+
+  fulfilment-api:
+    image: courselabs/fulfilment-api:linux-amd64
+
+  fulfilment-authz:
+    image: courselabs/fulfilment-authz:linux-amd64
