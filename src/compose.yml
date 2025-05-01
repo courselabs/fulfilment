@@ -3,23 +3,23 @@ version: '3.7'
 services:
 
   fulfilment-processor:
-    image: courselabs/fulfilment-processor:latest
+    image: courselabs/fulfilment-processor:25.03
     build:
       context: ./fulfilment-processor
 
   fulfilment-web:
-    image: courselabs/fulfilment-web:latest
+    image: courselabs/fulfilment-web:25.03
     build:
       context: ./fulfilment-frontend
       dockerfile: fulfilment-web/Dockerfile
 
   fulfilment-api:
-    image: courselabs/fulfilment-api:latest
+    image: courselabs/fulfilment-api:25.03
     build:
       context: ./fulfilment-api
 
   fulfilment-authz:
-    image: courselabs/fulfilment-authz:latest
+    image: courselabs/fulfilment-authz:25.03
     build:
       context: ./fulfilment-frontend
       dockerfile: fulfilment-authz/Dockerfile

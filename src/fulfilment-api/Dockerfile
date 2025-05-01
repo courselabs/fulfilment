@@ -1,4 +1,4 @@
-FROM maven:3.6.3-jdk-11 AS builder
+FROM maven:3.9.8-eclipse-temurin-22-alpine AS builder
 
 WORKDIR /usr/src/api
 COPY pom.xml .
@@ -8,7 +8,7 @@ COPY . .
 RUN mvn package
 
 # app
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:22-jre-alpine
 
 WORKDIR /app
 COPY --from=builder /usr/src/api/target/fulfilment-api-0.1.0.jar .

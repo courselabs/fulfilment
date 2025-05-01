@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:3.1 as builder
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS builder
 
 WORKDIR /src
 COPY Fulfilment.Processor.csproj .
@@ -8,7 +8,7 @@ COPY . .
 RUN dotnet publish -c Release -o /out --no-restore Fulfilment.Processor.csproj
 
 # app image
-FROM mcr.microsoft.com/dotnet/runtime:3.1
+FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine
 
 EXPOSE 8080
 
