@@ -1,0 +1,86 @@
+services:
+
+  fulfilment-api:
+    image: courselabs/fulfilment-api:25.03-linux-arm64
+    environment:
+      - OPENTRACING_JAEGER_ENABLED=true
+      - TRACE_CUSTOM_SPANS=true
+      - TRACE_JAEGER_HOST=jaeger
+    networks:
+      - metrics
+      - tracing
+      - fulfilment 
+
+  fulfilment-authz:
+    image: courselabs/fulfilment-authz:25.03-linux-arm64
+    environment:
+      - Observability__Logging__LogFilePath=logs/fulfilment-authz.json
+      - Observability__Metrics__Enabled=true
+      - Observability__Trace__Jaeger=true
+    volumes:
+      - ./config/override.json:/app/config/override.json
+      - ./data:/app/logs
+    networks:
+      - metrics
+      - tracing 
+      - fulfilment 
+
+  fulfilment-web:
+    image: courselabs/fulfilment-web:25.03-linux-arm64
+    ports:
+      - "8080:8080"
+    environment:
+      - Observability__Logging__LogFilePath=logs/fulfilment-web.json
+      - Observability__Metrics__Enabled=true
+      - Observability__Trace__Jaeger=true
+      - Observability__Trace__HeaderFormat=W3C
+      - Documents__Api__BaseUrl=http://fulfilment-api
+      - Documents__Authz__Url=http://fulfilment-authz:8080/check
+      - Documents__Prerender=true
+    volumes:
+      - ./config/override.json:/app/config/override.json
+      - ./data:/app/logs
+    depends_on:
+      - fulfilment-api
+      - fulfilment-authz
+    networks:
+      - metrics
+      - tracing 
+      - fulfilment 
+
+  fulfilment-processor-1:
+    image: courselabs/fulfilment-processor:25.03-linux-arm64
+    environment:
+      - Observability__Logging__LogFilePath=logs/fulfilment-processor-1.json
+      - Observability__StartupDelaySeconds=20
+      - Observability__ExitAfterSeconds=120
+    volumes:
+      - ./config/override.json:/app/config/override.json
+      - ./data:/app/logs
+    restart: always
+    networks: 
+      - fulfilment
+      - metrics
+
+  fulfilment-processor-2:
+    image: courselabs/fulfilment-processor:25.03-linux-arm64
+    environment:
+      - Observability__Logging__LogFilePath=logs/fulfilment-processor-2.json
+      - Observability__Metrics__Factor=1.5
+      - Observability__StartupDelaySeconds=40
+      - Observability__ExitAfterSeconds=180
+    volumes:
+      - ./config/override.json:/app/config/override.json
+      - ./data:/app/logs
+    restart: always
+    networks: 
+      - fulfilment
+      - metrics
+
+networks:
+  fulfilment:
+    name: obsfun-fulfilment
+  metrics:
+    name: obsfun-metrics
+  tracing:
+    name: obsfun-tracing
